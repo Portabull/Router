@@ -1,28 +1,36 @@
 package org.tester;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-
-import javax.annotation.PostConstruct;
+import org.tester.service.RequestService;
+import org.tester.service.impl.RequestServiceImpl;
+import org.tester.service.impl.RequestServiceImplWithLogs;
 
 @SpringBootApplication
 public class Router {
-
-    private static final Logger logger = LoggerFactory.getLogger(Router.class);
-
     @Autowired
     Environment environment;
+
+    static boolean enableRequestLogs;
 
     public static void main(String[] args) {
         SpringApplication.run(Router.class, args);
     }
 
-    @PostConstruct
-    public void load() {
-        logger.info("Base Url Loaded: {}", environment.getProperty("base.url"));
+    @Bean
+    public RequestService loadRequestService(ApplicationContext context) {
+        RequestService requestService;
+        enableRequestLogs = Boolean.parseBoolean(environment.getProperty("enable.request.logs"));
+
+        requestService = enableRequestLogs ?
+                context.getBean(RequestServiceImplWithLogs.class) :
+                context.getBean(RequestServiceImpl.class);
+
+        return requestService;
     }
+
 }
