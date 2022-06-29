@@ -23,6 +23,13 @@ public class RouterController {
     @Autowired
     private RouterUtils routerUtils;
 
+
+    @PostMapping("/{contextPath}/{requestMapping}")
+    public ResponseEntity<?> defaultRouter(HttpServletRequest request,
+                                    @PathVariable(required = true) String contextPath,
+                                    @PathVariable(required = true) String requestMapping) throws ConnectException {
+        return routerUtils.route(contextPath, requestMapping, request);
+    }
     @PostMapping("/router/{contextPath}/{requestMapping}")
     public ResponseEntity<?> router(HttpServletRequest request,
                                     @PathVariable(required = true) String contextPath,
